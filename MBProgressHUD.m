@@ -773,6 +773,10 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 @end
 
 
+@interface MBRoundProgressView()
+@property (atomic, MB_STRONG) UILabel *label;
+@end
+
 @implementation MBRoundProgressView
 
 #pragma mark - Lifecycle
@@ -790,6 +794,18 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		_annular = NO;
 		_progressTintColor = [[UIColor alloc] initWithWhite:1.f alpha:1.f];
 		_backgroundTintColor = [[UIColor alloc] initWithWhite:1.f alpha:.1f];
+        
+        _label = [[UILabel alloc] initWithFrame:self.bounds];
+        _label.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _label.adjustsFontSizeToFitWidth = NO;
+        _label.textAlignment = NSTextAlignmentCenter;
+        _label.opaque = NO;
+        _label.backgroundColor = [UIColor clearColor];
+        _label.textColor = [UIColor whiteColor];
+        _label.font = [UIFont boldSystemFontOfSize:kDetailsLabelFontSize];
+        _label.text = @"0%";
+        [self addSubview:_label];
+
 		[self registerForKVO];
 	}
 	return self;
@@ -800,6 +816,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 #if !__has_feature(objc_arc)
 	[_progressTintColor release];
 	[_backgroundTintColor release];
+    [_label release];
 	[super dealloc];
 #endif
 }
@@ -834,6 +851,7 @@ static const CGFloat kDetailsLabelFontSize = 12.f;
 		[processPath addArcWithCenter:center radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
 		[_progressTintColor set];
 		[processPath stroke];
+        _label.text = [NSString stringWithFormat:@"%.0f%%",floor(self.progress *100.0)];
 	} else {
 		// Draw background
 		[_progressTintColor setStroke];
